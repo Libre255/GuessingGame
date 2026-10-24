@@ -1,0 +1,67 @@
+[Jag siktar på VG]
+
+Vad är pull repektive push?
+Pull means that you get the latest updates from the remote repository and apply those updates into your current local git repository.
+Push means that you send your local git changes to a remote git repository.
+
+När använder man log respektive status?
+Log is used for listing all the commits the git repository has.
+Status is used for checking which files has changed since your last commit, it also shows the untracked/tracked files and which files will be included in the next commit.
+
+Vad är en Git branch och varför är de viktiga?
+A git branch is an environment where a developer can implement changes without affecting the production version of the application.
+It's important to create branches because it helps developers work on different tasks such as features, tests, bugs and hotfix, all while not bothering the production version.
+
+Det finns flera sätt att rulla tillbaka koden till ett tidigare tillstånd. 
+Förklara skillnaden och motivera när man skulle använda den ena eller andra metoden. 
+Ge exempel på de kommandon du använder för att göra detta och vissa att det fungerar, vilken output du fick från git-kommandona.
+Tips: Gör exemplen med att backa i en branch så att master fortfarande är korrekt. 
+Git restore; Allows you to restore the current changes on your files.
+Git reset; Allows you to rollback to a previous commit and remove the commits after the selected "git reset ID-commit". 
+Git revert; Allows you to rollback to a previous commit by creating a commit with the changes from the selected "git revert ID-commit", this method doesn't remove any commits.
+Git restore is most usefull when you want to restore the state of a file or directory from the latest commit.
+Git revert is most usefull when you want to keep your previous commit but still rollback to a older commit, this is the most safest way to rollback and preferably than git reset, because it saves the commit history, in case someone else missed something.
+Git reset is most usefull when you are sure that your previous commits should be deleted because you want to start over from the selected commit.
+
+Beskriv och jämför hur man kan använda git rebase och git merge i ett scenario där flera utvecklare jobbar på olika feature branches. 
+[Scenario 1]
+Lets say that developer (A) is working on the about-page of a website on branch (about-page) meanwhile developer (B) is working on the main page of the website on branch (homepage).
+In this scenario both developers are working on a complety different task, regardless of what (A) is implementing on (main branch) it wont bother (B) tasks,
+so in this scenario once (A) merged hes branch into (main branch) and then (B) would like to get the latest changes from main, 
+the best command in this scenario it would be "git rebase main" from (B) branch, because it would keep the commit history clean and we are sure that merge conflicts
+most likely won't happen because both developers are working on a whole different tasks.
+[Scenario 2]
+If (A) and (B) is working on different components on (homepage) that could mean a higher chance of creating a conflict 
+then once (A) has merged into main and (B) wants to get the latest updates from main then its better to for (B) to:
+1. "git switch main"
+2. "git fetch"
+3. "git switch -c testMergeFeatureAandFeatureB"
+4. "git switch testMergeFeatureAandFeatureB"
+5. "git merge [name of (B) feature branch]"
+6. check if there is conflict and resolve if there its then resolve on testMergeFeatureAandFeatureB"
+7. "git switch [name of (B) feature branch]"
+8. "git merge testMergeFeatureAandFeatureB"
+This way we get a well structure commit history and in case we find a bug we can go back to testMergeFeatureAandFeatureB to solve this problem.
+You could also compare (git rebase and git merge) with (git pull and git fetch), both are looking at the same result but are doing it in different ways to archive that result.
+
+Diskutera fördelarna och nackdelarna med båda teknikerna, samt hur de påverkar historiken.
+Uppgift: Skapa ett repo med två eller fler feature branches som utvecklare arbetar på. 
+Beskriv hur du löser konflikter som uppstår under rebase och merge och visa slutresultatet i historiken.
+Exempel: Använd kommandon som git rebase, git merge för att illustrera skillnaderna.
+Motivering: Förklara varför rebase ibland används i stället för merge för att hålla en renare historik och när merge är
+att föredra för att bibehålla kontext mellan commits.
+In my In1VG repository example i created main starting with 2 files, (about_page.txt) and (home_page.txt), then created 3 branches
+(about-page), (home_page_slider) and (home_page_content). Once (about-page) was finish editing both files it was merge into main then
+(home_page_slider) had already worked on (home_page.txt) file and commited then did "git rebase main" to get the latest update from main
+but a conflict appeared because (about-page) had also edited (home_page.txt) file so a new commit was created to resolve that conflict on (home_page_slider) branch,
+this created an not so clean commit history that will show up in the main branch, since this commit will be part of (about-page) instead of being handle on it's own branch with a better branch name,
+after conflict resolved (home_page_slider) was merged into main, then (home_page_content) did some changes and had a commit 
+then wanted to also get the latest update from main but in order to have a well structure commit structure it did first created an branch from (home_page_content) named
+(home_page_content_merging_main) to test the version before merging and resolving conflicts if appeared, and since the other two branches has changed (home_page.txt)
+there was now 2 conflicts, those were resolved in (home_page_content_merging_main) and commited there, then we switch back to (home_page_content) and do "git merge home_page_content_merging_main"
+now we dont have a conflict on (home_page_content) and there tests and conflict were properly handle in another branch before merge.
+
+git rebase is better to use when you know you are sure you dont have any conflicts on the selected rebase branch, this makes the workflow quickier and we have a cleaner commit history.
+git merge is better to use when you are unsure if you could have some conflicts (which is most of the cases) and you want to check first potential tests and conflicts before the merge, 
+this way we preserv the exact commit steps towards the solution and finally the original commit order on main remains preserved.
+
